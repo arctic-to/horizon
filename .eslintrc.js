@@ -1,8 +1,5 @@
 module.exports = {
-  extends: [
-    './node_modules/hitoka/.eslintrc.js',
-    'prettier/@typescript-eslint',
-  ],
+  extends: ['./node_modules/hitoka/.eslintrc.js'],
   root: true,
   env: {
     node: true,
@@ -13,5 +10,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'node/no-unpublished-import': 'off',
   },
-};
+}

@@ -651,6 +651,23 @@
     consola "^2.15.0"
     node-fetch "^2.6.1"
 
+"@prisma/client@2.17.0":
+  version "2.17.0"
+  resolved "https://registry.npm.taobao.org/@prisma/client/download/@prisma/client-2.17.0.tgz#e38462796c2e824504763416f5e3a7219d70652d"
+  integrity sha1-44RieWwugkUEdjQW9eOnIZ1wZS0=
+  dependencies:
+    "@prisma/engines-version" "2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223"
+
+"@prisma/engines-version@2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223":
+  version "2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223"
+  resolved "https://registry.npm.taobao.org/@prisma/engines-version/download/@prisma/engines-version-2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223.tgz#9ae6ed4467a0febff8afaf216c1bb67225f51b84"
+  integrity sha1-mubtRGeg/r/4r68hbBu2ciX1G4Q=
+
+"@prisma/engines@2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223":
+  version "2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223"
+  resolved "https://r.cnpmjs.org/@prisma/engines/download/@prisma/engines-2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223.tgz#08bc3633fd27fb1935805ef16c37802ed713db5b"
+  integrity sha1-CLw2M/0n+xk1gF7xbDeALtcT21s=
+
 "@schematics/schematics@0.1102.0":
   version "0.1102.0"
   resolved "https://registry.npm.taobao.org/@schematics/schematics/download/@schematics/schematics-0.1102.0.tgz#f47d8fb6d9029ffe646ab9680ac5b2833322df1e"
@@ -4536,6 +4553,13 @@ pretty-format@^26.0.0, pretty-format@^26.6.2:
     ansi-regex "^5.0.0"
     ansi-styles "^4.0.0"
     react-is "^17.0.1"
+
+prisma@2.17.0:
+  version "2.17.0"
+  resolved "https://registry.npm.taobao.org/prisma/download/prisma-2.17.0.tgz#686469914ed13d4b0926ee5f17efb7a9ab741e8a"
+  integrity sha1-aGRpkU7RPUsJJu5fF++3qat0Hoo=
+  dependencies:
+    "@prisma/engines" "2.17.0-35.3c463ebd78b1d21d8fdacdd27899e280cf686223"
 
 process-nextick-args@~2.0.0:
   version "2.0.1"

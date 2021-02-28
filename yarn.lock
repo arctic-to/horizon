@@ -4519,6 +4519,11 @@ neo-async@^2.6.2:
   resolved "https://registry.npm.taobao.org/neo-async/download/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha1-tKr7k+OustgXTKU88WOrfXMIMF8=
 
+nest-router@^1.0.9:
+  version "1.0.9"
+  resolved "https://r.cnpmjs.org/nest-router/download/nest-router-1.0.9.tgz#cbe814dadf90b765e0a5b77c562479d5d523a485"
+  integrity sha1-y+gU2t+Qt2Xgpbd8ViR51dUjpIU=
+
 nice-try@^1.0.4:
   version "1.0.5"
   resolved "https://registry.npm.taobao.org/nice-try/download/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"

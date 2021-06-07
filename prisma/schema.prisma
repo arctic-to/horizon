@@ -16,7 +16,23 @@ model NeteaseCloudMusicRecommendedSongs {
 
 model NeteaseCloudMusicLikeSongEvent {
   id        Int      @id @default(autoincrement())
-  songId   Int
+  songId    Int
   userId    Int
   createdAt DateTime @default(now())
+}
+
+model NeteaseCloudMusicTag {
+  id        Int                     @id @default(autoincrement())
+  createdAt DateTime                @default(now())
+  userId    Int
+  name      String
+  songs     NeteaseCloudMusicSong[]
+}
+
+model NeteaseCloudMusicSong {
+  id        Int                    @id @default(autoincrement())
+  createdAt DateTime               @default(now())
+  songId    Int
+  userId    Int
+  tags      NeteaseCloudMusicTag[]
 }

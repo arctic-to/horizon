@@ -1,19 +1,36 @@
 // Nested Route: https://github.com/nestjs/nest/issues/255
 import { Routes } from 'nest-router'
 
-import { LikeModule } from './tracking/netease-cloud-music/like/like.module'
-import { NeteaseCloudMusicModule } from './tracking/netease-cloud-music/netease-cloud-music.module'
-import { RecommendedModule } from './tracking/netease-cloud-music/recommended/recommended.module'
-import { TrackingModule } from './tracking/tracking.module'
+import { NeteaseCloudMusicModule } from './netease-cloud-music/netease-cloud-music.module'
+import { SongModule } from './netease-cloud-music/song/song.module'
+import { SongTagsModule } from './netease-cloud-music/song/tags/tags.module'
+import { TagsModule } from './netease-cloud-music/tags/tags.module'
+import { LikeModule } from './netease-cloud-music/tracking/like/like.module'
+import { RecommendedModule } from './netease-cloud-music/tracking/recommended/recommended.module'
+import { TrackingModule } from './netease-cloud-music/tracking/tracking.module'
 
 export const routes: Routes = [
   {
-    path: '/tracking',
-    module: TrackingModule,
+    path: '/netease-cloud-music',
+    module: NeteaseCloudMusicModule,
     children: [
       {
-        path: '/netease-cloud-music',
-        module: NeteaseCloudMusicModule,
+        path: '/tags',
+        module: TagsModule,
+      },
+      {
+        path: '/song',
+        module: SongModule,
+        children: [
+          {
+            path: '/tags',
+            module: SongTagsModule,
+          },
+        ],
+      },
+      {
+        path: '/tracking',
+        module: TrackingModule,
         children: [
           {
             path: '/recommended',

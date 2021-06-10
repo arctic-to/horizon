@@ -1,4 +1,14 @@
-import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common'
+import {
+  Controller,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Get,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 
 import { TagsService } from './tags.service'
@@ -6,6 +16,11 @@ import { TagsService } from './tags.service'
 @Controller()
 export class TagsController {
   constructor(private readonly tagsService: TagsService) {}
+
+  @Get()
+  async findUserTags(@Query('userId', ParseIntPipe) userId: number) {
+    return this.tagsService.findUserTags(userId)
+  }
 
   @Post()
   async create(@Body() data: Prisma.NeteaseCloudMusicTagCreateInput) {

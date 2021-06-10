@@ -7,6 +7,10 @@ import { PrismaService } from '@/prisma.service'
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
+  async findUserTags(userId: number) {
+    return this.prisma.neteaseCloudMusicTag.findMany({ where: { userId } })
+  }
+
   async create(data: Prisma.NeteaseCloudMusicTagCreateInput) {
     return this.prisma.neteaseCloudMusicTag.create({ data })
   }

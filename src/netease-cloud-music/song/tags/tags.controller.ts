@@ -8,6 +8,8 @@ import {
   Get,
   Query,
   ParseArrayPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common'
 
 import { AddTagDto, GenerateTagsDto } from './dto'
@@ -20,14 +22,15 @@ export class TagsController {
   @Get()
   async find(
     @Query('userId', ParseIntPipe) userId: number,
-    @Query('songIds', ParseArrayPipe) songIds: number[],
+    @Query('songIds', new ParseArrayPipe({ items: Number })) songIds: number[],
   ) {
     return this.tagsService.find(userId, songIds)
   }
 
   @Post('generate')
+  @HttpCode(HttpStatus.ACCEPTED)
   async generate(@Body() data: GenerateTagsDto) {
-    return this.tagsService.generate(data)
+    this.tagsService.generate(data)
   }
 
   @Post()

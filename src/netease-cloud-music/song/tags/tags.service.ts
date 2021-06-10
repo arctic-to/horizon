@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common'
-import Prisma from '@prisma/client'
+import { NeteaseCloudMusicTag } from '@prisma/client'
 import { isHangul } from 'hangul-js'
 import { isKana, isKanji, isRomaji } from 'wanakana'
 
@@ -29,11 +29,11 @@ export class TagsService {
   constructor(private prisma: PrismaService) {}
 
   async ensureTagsExist(userId: number) {
-    const count = this.prisma.neteaseCloudMusicTag.count({
+    const count = await this.prisma.neteaseCloudMusicTag.count({
       where: { userId },
     })
     if (!count) {
-      this.prisma.neteaseCloudMusicTag.createMany({
+      await this.prisma.neteaseCloudMusicTag.createMany({
         data: Object.values(Language).map((name) => ({
           userId,
           name,
@@ -54,34 +54,40 @@ export class TagsService {
       .then((songs) => songs.map((song) => song.tags))
   }
 
-  async generate(data: GenerateTagsDto) {
-    const playlistDetailRes = await fetchPlaylistDetail(data.playlistId)
+  async generate({ userId, playlistId }: GenerateTagsDto) {
+    const playlistDetailRes = await fetchPlaylistDetail(playlistId)
     const ids = playlistDetailRes.data.playlist.trackIds.map(({ id }) => id)
     const songDetailRes = await fetchSongDetail(ids)
 
-    const tagMap = new Map<string, Prisma.NeteaseCloudMusicTag>()
-    const tags = await this.ensureTagsExist(data.userId)
+    const tagMap = new Map<string, NeteaseCloudMusicTag>()
+    const tags = await this.ensureTagsExist(userId)
     tags.forEach((tag) => tagMap.set(tag.name, tag))
 
-    const result: Prisma.NeteaseCloudMusicTag[][] = []
-    const promises = songDetailRes.data.songs.map((song) => {
+    for (const song of songDetailRes.data.songs) {
       const tagName = getTagNameBySongName(song.name)
-      if (!tagName) {
-        return
-      }
+      if (!tagName) continue
 
       const tag = tagMap.get(tagName)!
-      result.push([tag])
-      return this.prisma.neteaseCloudMusicSong.create({
-        data: {
-          songId: song.id,
-          userId: data.userId,
-          tags: { connect: [{ id: tag.id }] },
-        },
+      const songRecord = await this.prisma.neteaseCloudMusicSong.findFirst({
+        where: { userId, songId: song.id },
       })
-    })
-
-    return Promise.all(promises).then(() => result)
+      if (songRecord) {
+        await this.prisma.neteaseCloudMusicSong.update({
+          where: { id: songRecord.id },
+          data: {
+            tags: { set: [{ id: tag.id }] },
+          },
+        })
+      } else {
+        await this.prisma.neteaseCloudMusicSong.create({
+          data: {
+            userId,
+            songId: song.id,
+            tags: { connect: [{ id: tag.id }] },
+          },
+        })
+      }
+    }
   }
 
   async add(data: AddTagDto) {

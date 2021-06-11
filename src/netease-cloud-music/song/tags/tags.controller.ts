@@ -7,7 +7,6 @@ import {
   ParseIntPipe,
   Get,
   Query,
-  ParseArrayPipe,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common'
@@ -22,9 +21,9 @@ export class TagsController {
   @Get()
   async find(
     @Query('userId', ParseIntPipe) userId: number,
-    @Query('songIds', new ParseArrayPipe({ items: Number })) songIds: number[],
+    @Query('playlistId', ParseIntPipe) playlistId: number,
   ) {
-    return this.tagsService.find(userId, songIds)
+    return this.tagsService.find(userId, playlistId)
   }
 
   @Post('generate')

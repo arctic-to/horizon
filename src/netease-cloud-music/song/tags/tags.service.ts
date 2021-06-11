@@ -65,13 +65,14 @@ export class TagsService {
     })
   }
 
-  async find(userId: number, songIds: number[]) {
-    return this.prisma.neteaseCloudMusicSong
-      .findMany({
-        where: { userId, songId: { in: songIds } },
-        include: { tags: true },
-      })
-      .then((songs) => songs.map((song) => song.tags))
+  async find(userId: number, playlistId: number) {
+    const { data } = await fetchPlaylistDetail(playlistId)
+    const songIds = data.playlist.trackIds.map(({ id }) => id)
+    const songs = await this.prisma.neteaseCloudMusicSong.findMany({
+      where: { userId, songId: { in: songIds } },
+      include: { tags: { select: { id: true, name: true } } },
+    })
+    return songs.map((song) => [song.songId, song.tags])
   }
 
   async generate({ userId, playlistId }: GenerateTagsDto) {

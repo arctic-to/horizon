@@ -3,8 +3,8 @@ import { NeteaseCloudMusicTag } from '@prisma/client'
 import { isHangul } from 'hangul-js'
 import { isKana, isKanji, isRomaji } from 'wanakana'
 
-import { fetchPlaylistDetail } from '@/netease-cloud-music/request'
-import { fetchSongDetail } from '@/netease-cloud-music/request/song/detail'
+import { fetchLyric, fetchPlaylistDetail } from '@/netease-cloud-music/request'
+import { fetchSongDetail } from '@/netease-cloud-music/request/song'
 import { PrismaService } from '@/prisma.service'
 
 import { AddTagDto, GenerateTagsDto } from './dto'
@@ -14,14 +14,34 @@ enum Language {
   Chinese = '中文',
   Japanese = '日本語',
   Korean = '한국어',
+  Absolute = '纯音乐',
 }
 
-function getTagNameBySongName(songName: string) {
+async function getUncollectedSongDefaultTagName(songId: number) {
+  const { data } = await fetchSongDetail([songId])
+  const songName = data.songs[0].name
+  if (!songName) return
+
   const charArray = [...songName]
   if (charArray.some(isKana)) return Language.Japanese
   if (charArray.some(isHangul)) return Language.Korean
   if (charArray.some(isKanji)) return Language.Chinese
   if (charArray.every(isRomaji)) return Language.English
+}
+
+async function getSongDefaultTagName(songId: number) {
+  const { data } = await fetchLyric(songId)
+  if (data.nolyric) return Language.Absolute
+  if (data.uncollected || !data.lrc) {
+    return getUncollectedSongDefaultTagName(songId)
+  }
+
+  const charArray = [...data.lrc.lyric]
+  if (charArray.some(isKana)) return Language.Japanese
+  if (charArray.some(isHangul)) return Language.Korean
+
+  if (data.tlyric?.lyric) return Language.English
+  return getUncollectedSongDefaultTagName(songId)
 }
 
 @Injectable()
@@ -56,20 +76,19 @@ export class TagsService {
 
   async generate({ userId, playlistId }: GenerateTagsDto) {
     const playlistDetailRes = await fetchPlaylistDetail(playlistId)
-    const ids = playlistDetailRes.data.playlist.trackIds.map(({ id }) => id)
-    const songDetailRes = await fetchSongDetail(ids)
+    const songIds = playlistDetailRes.data.playlist.trackIds.map(({ id }) => id)
 
     const tagMap = new Map<string, NeteaseCloudMusicTag>()
     const tags = await this.ensureTagsExist(userId)
     tags.forEach((tag) => tagMap.set(tag.name, tag))
 
-    for (const song of songDetailRes.data.songs) {
-      const tagName = getTagNameBySongName(song.name)
-      if (!tagName) continue
+    for (const songId of songIds) {
+      const defaultTagName = await getSongDefaultTagName(songId)
+      if (!defaultTagName) continue
 
-      const tag = tagMap.get(tagName)!
+      const tag = tagMap.get(defaultTagName)!
       const songRecord = await this.prisma.neteaseCloudMusicSong.findFirst({
-        where: { userId, songId: song.id },
+        where: { userId, songId },
       })
       if (songRecord) {
         await this.prisma.neteaseCloudMusicSong.update({
@@ -82,7 +101,7 @@ export class TagsService {
         await this.prisma.neteaseCloudMusicSong.create({
           data: {
             userId,
-            songId: song.id,
+            songId,
             tags: { connect: [{ id: tag.id }] },
           },
         })

@@ -11,7 +11,7 @@ export interface SongDetailResponse {
 }
 
 export interface Song {
-  name: string
+  name: string | null // null if the song is stored in private cloud
   id: number
   pst: number
   t: number

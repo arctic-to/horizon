@@ -90,23 +90,35 @@ export class TagsService {
     }
   }
 
-  async add(data: AddTagDto) {
-    return this.prisma.neteaseCloudMusicSong.updateMany({
-      where: data,
-      data,
+  async add({ userId, songId, tagId, tagName }: AddTagDto) {
+    if (tagId === undefined && !tagName) return
+
+    const song = await this.prisma.neteaseCloudMusicSong.findFirst({
+      where: { songId },
+    })
+    if (!song) return
+
+    return this.prisma.neteaseCloudMusicSong.update({
+      where: { id: song.id },
+      data: {
+        tags:
+          tagId !== undefined
+            ? { connect: { id: tagId } }
+            : { create: { userId, name: tagName! } },
+      },
     })
   }
 
-  async remove(id: number, songId: number) {
+  async remove(tagId: number, songId: number) {
     const tag = await this.prisma.neteaseCloudMusicTag.findUnique({
-      where: { id },
+      where: { id: tagId },
       select: { songs: true },
     })
-    const newSongs = tag?.songs.filter((song) => song.songId !== songId) ?? []
+    const newSongs = tag?.songs.filter((song) => song.songId === songId) ?? []
 
     return this.prisma.neteaseCloudMusicTag.update({
-      where: { id },
-      data: { songs: { set: newSongs } },
+      where: { id: tagId },
+      data: { songs: { set: newSongs.map(({ id }) => ({ id })) } },
     })
   }
 }

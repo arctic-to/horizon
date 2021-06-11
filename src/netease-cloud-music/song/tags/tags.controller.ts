@@ -38,11 +38,11 @@ export class TagsController {
     return this.tagsService.add(data)
   }
 
-  @Delete(':id')
+  @Delete(':tagId')
   async remove(
-    @Param('id', ParseIntPipe) id: number,
-    @Body('songId') songId: number,
+    @Param('tagId', ParseIntPipe) tagId: number,
+    @Query('songId', ParseIntPipe) songId: number,
   ) {
-    return this.tagsService.remove(id, songId)
+    return this.tagsService.remove(tagId, songId)
   }
 }

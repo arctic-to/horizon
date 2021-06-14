@@ -113,10 +113,18 @@ export class TagsService {
   async add({ userId, songId, tagId, tagName }: AddTagDto) {
     if (tagId === undefined && !tagName) return
 
-    const song = await this.prisma.neteaseCloudMusicSong.findFirst({
+    let song = await this.prisma.neteaseCloudMusicSong.findFirst({
       where: { songId, userId },
     })
-    if (!song) return
+
+    if (!song) {
+      song = await this.prisma.neteaseCloudMusicSong.create({
+        data: {
+          songId,
+          userId,
+        },
+      })
+    }
 
     return this.prisma.neteaseCloudMusicSong.update({
       where: { id: song.id },

@@ -13,14 +13,18 @@ export class PrismaService
     super({
       log: [{ emit: 'event', level: 'query' }],
     })
-    this.$on('query' as 'beforeExit', (e: any) => {
-      console.log(
-        `[${chalk.grey(e.timestamp)}]`,
-        chalk.green.bold(e.duration),
-        chalk.white(e.params),
-      )
-      console.log(chalk.yellow(format(e.query)))
-    })
+
+    // eslint-disable-next-line no-constant-condition
+    if (false) {
+      this.$on('query' as 'beforeExit', (e: any) => {
+        console.log(
+          `[${chalk.grey(e.timestamp)}]`,
+          chalk.green.bold(e.duration),
+          chalk.white(e.params),
+        )
+        console.log(chalk.yellow(format(e.query)))
+      })
+    }
   }
   async onModuleInit() {
     await this.$connect()

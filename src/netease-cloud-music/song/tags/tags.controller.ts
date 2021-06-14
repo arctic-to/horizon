@@ -2,7 +2,6 @@ import {
   Controller,
   Post,
   Body,
-  Param,
   Delete,
   ParseIntPipe,
   Get,
@@ -37,11 +36,12 @@ export class TagsController {
     return this.tagsService.add(data)
   }
 
-  @Delete(':tagId')
+  @Delete()
   async remove(
-    @Param('tagId', ParseIntPipe) tagId: number,
     @Query('songId', ParseIntPipe) songId: number,
+    @Query('userId', ParseIntPipe) userId: number,
+    @Query('tagId', ParseIntPipe) tagId: number,
   ) {
-    return this.tagsService.remove(tagId, songId)
+    return this.tagsService.remove(songId, userId, tagId)
   }
 }

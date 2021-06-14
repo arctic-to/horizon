@@ -32,7 +32,7 @@ async function getUncollectedSongDefaultTagName(songId: number) {
 async function getSongDefaultTagName(songId: number) {
   const { data } = await fetchLyric(songId)
   if (data.nolyric) return Language.Absolute
-  if (data.uncollected || !data.lrc) {
+  if (data.uncollected || !data.lrc || typeof data.lrc.lyric !== 'string') {
     return getUncollectedSongDefaultTagName(songId)
   }
 
@@ -114,7 +114,7 @@ export class TagsService {
     if (tagId === undefined && !tagName) return
 
     const song = await this.prisma.neteaseCloudMusicSong.findFirst({
-      where: { songId },
+      where: { songId, userId },
     })
     if (!song) return
 
@@ -126,19 +126,20 @@ export class TagsService {
             ? { connect: { id: tagId } }
             : { create: { userId, name: tagName! } },
       },
+      include: { tags: true },
     })
   }
 
-  async remove(tagId: number, songId: number) {
-    const tag = await this.prisma.neteaseCloudMusicTag.findUnique({
-      where: { id: tagId },
-      select: { songs: true },
+  async remove(songId: number, userId: number, tagId: number) {
+    const song = await this.prisma.neteaseCloudMusicSong.findFirst({
+      where: { songId, userId },
     })
-    const newSongs = tag?.songs.filter((song) => song.songId === songId) ?? []
+    if (!song) return
 
-    return this.prisma.neteaseCloudMusicTag.update({
-      where: { id: tagId },
-      data: { songs: { set: newSongs.map(({ id }) => ({ id })) } },
+    return this.prisma.neteaseCloudMusicSong.update({
+      where: { id: song.id },
+      data: { tags: { disconnect: { id: tagId } } },
+      include: { tags: true },
     })
   }
 }

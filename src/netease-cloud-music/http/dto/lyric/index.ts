@@ -1,9 +1,3 @@
-import axios from '../axios'
-
-export async function fetchLyric(id: number) {
-  return axios.get<LyricResponse>(`/lyric?id=${id}`)
-}
-
 export interface LyricResponse {
   code: number
   sgc: boolean

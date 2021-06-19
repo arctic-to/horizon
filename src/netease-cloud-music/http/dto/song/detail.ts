@@ -1,9 +1,3 @@
-import axios from '../axios'
-
-export async function fetchSongDetail(ids: number[]) {
-  return axios.get<SongDetailResponse>(`/song/detail?ids=${ids}`)
-}
-
 export interface SongDetailResponse {
   songs: Song[]
   privileges: Privilege[]

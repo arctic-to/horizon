@@ -1,9 +1,3 @@
-import axios from '../axios'
-
-export async function fetchPlaylistDetail(id: number) {
-  return axios.get<PlaylistDetailResponse>(`/playlist/detail?id=${id}`)
-}
-
 export interface PlaylistDetailResponse {
   code: number
   relatedVideos: any

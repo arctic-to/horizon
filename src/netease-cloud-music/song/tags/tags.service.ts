@@ -82,12 +82,7 @@ export class TagsService {
     return songs.map((song) => [song.songId, song.tags])
   }
 
-  async generate({ userId, playlistId }: GenerateTagsDto) {
-    const { data } = await this.httpService
-      .fetchPlaylistDetail(playlistId)
-      .toPromise()
-    const songIds = data.playlist.trackIds.map(({ id }) => id)
-
+  async generate({ userId, songIds }: GenerateTagsDto) {
     const tagMap = new Map<string, NeteaseCloudMusicTag>()
     const tags = await this.ensureTagsExist(userId)
     tags.forEach((tag) => tagMap.set(tag.name, tag))
